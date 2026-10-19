@@ -294,6 +294,240 @@ WHERE active = true;`,
 
     answer: 2,
   },
+
+  /*
+  ============================================================
+  EXAMPLE 5
+  HTML CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which HTML snippet creates a link that opens in a new tab safely?',
+
+    choices: [
+      {
+        code: '<a href="https://example.com" target="_blank" rel="noopener">Visit</a>',
+
+        language: 'html',
+      },
+
+      {
+        code: '<link href="https://example.com">Visit</link>',
+
+        language: 'html',
+      },
+
+      {
+        code: '<a src="https://example.com">Visit</a>',
+
+        language: 'html',
+      },
+
+      {
+        code: '<a href="https://example.com" target="_blank">Visit</a>',
+
+        language: 'html',
+      },
+    ],
+
+    answer: 0,
+  },
+
+  /*
+  ============================================================
+  EXAMPLE 6
+  CSS CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which CSS rule lays out items in a centered vertical column with 12px spacing?',
+
+    choices: [
+      {
+        code: '.list { display: flex; flex-direction: column; align-items: center; gap: 12px; }',
+
+        language: 'css',
+      },
+
+      {
+        code: '.list { display: block; text-align: center; spacing: 12px; }',
+
+        language: 'css',
+      },
+
+      {
+        code: '.list { flex: column; justify: center; gap: 12px; }',
+
+        language: 'css',
+      },
+
+      {
+        code: '.list { display: grid; align: center; margin: 12px; }',
+
+        language: 'css',
+      },
+    ],
+
+    answer: 0,
+  },
+
+  /*
+  ============================================================
+  EXAMPLE 7
+  JAVASCRIPT CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which JavaScript expression returns only active users?',
+
+    choices: [
+      {
+        code: 'users.filter(user => user.active)',
+
+        language: 'javascript',
+      },
+
+      {
+        code: 'users.map(user => user.active)',
+
+        language: 'javascript',
+      },
+
+      {
+        code: 'users.find(user => user.active)',
+
+        language: 'javascript',
+      },
+
+      {
+        code: 'users.sort(user => user.active)',
+
+        language: 'javascript',
+      },
+    ],
+
+    answer: 0,
+  },
+
+  /*
+  ============================================================
+  EXAMPLE 8
+  PYTHON CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which Python expression creates a list of squared numbers?',
+
+    choices: [
+      {
+        code: '[number ** 2 for number in numbers]',
+
+        language: 'python',
+      },
+
+      {
+        code: '{number ** 2 for number in numbers}',
+
+        language: 'python',
+      },
+
+      {
+        code: 'numbers.map(number => number ** 2)',
+
+        language: 'python',
+      },
+
+      {
+        code: 'for number in numbers: number ** 2',
+
+        language: 'python',
+      },
+    ],
+
+    answer: 0,
+  },
+
+  /*
+  ============================================================
+  EXAMPLE 9
+  JSON CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which JSON value correctly represents an active user named Ada?',
+
+    choices: [
+      {
+        code: '{"name":"Ada","active":true}',
+
+        language: 'json',
+      },
+
+      {
+        code: "{'name':'Ada','active':true}",
+
+        language: 'json',
+      },
+
+      {
+        code: '{"name":"Ada","active":"true"}',
+
+        language: 'json',
+      },
+
+      {
+        code: '{name:"Ada",active:true}',
+
+        language: 'json',
+      },
+    ],
+
+    answer: 0,
+  },
+
+  /*
+  ============================================================
+  EXAMPLE 10
+  SQL CODE CHOICES
+  ============================================================
+  */
+
+  {
+    mcq: 'Which SQL query counts active users?',
+
+    choices: [
+      {
+        code: 'SELECT COUNT(*) FROM users WHERE active = TRUE;',
+
+        language: 'sql',
+      },
+
+      {
+        code: 'COUNT users WHEN active = TRUE;',
+
+        language: 'sql',
+      },
+
+      {
+        code: 'SELECT users FROM COUNT WHERE active;',
+
+        language: 'sql',
+      },
+
+      {
+        code: 'SELECT COUNT(active) FROM users = TRUE;',
+
+        language: 'sql',
+      },
+    ],
+
+    answer: 0,
+  },
 ];
 
 /*
@@ -302,7 +536,7 @@ SELECT SINGLE MCQ
 ============================================================
 */
 
-const CURRENT_MCQ_INDEX = 1;
+const CURRENT_MCQ_INDEX = 9;
 
 /*
 ============================================================
@@ -528,7 +762,21 @@ function renderCodeBlock(preElement, code, language) {
   without executing HTML/JS.
   */
 
+  const normalizedLanguage = (language || 'plaintext').toLowerCase();
+  const languageAliases = {
+    js: 'javascript',
+    html: 'xml',
+    expression: 'plaintext',
+    text: 'plaintext',
+  };
+
+  codeElement.className = `language-${languageAliases[normalizedLanguage] || normalizedLanguage}`;
   codeElement.textContent = code;
+  codeElement.removeAttribute('data-highlighted');
+
+  if (window.hljs) {
+    window.hljs.highlightElement(codeElement);
+  }
 }
 
 /*
@@ -603,17 +851,11 @@ function createChoice(choiceData, index) {
 
     codeBlock.className = 'code-block choice-code';
 
-    codeBlock.dataset.language = choice.language || 'text';
-
     const codeElement = document.createElement('code');
 
-    /*
-    Safely render code.
-    */
-
-    codeElement.textContent = choice.code;
-
     codeBlock.appendChild(codeElement);
+
+    renderCodeBlock(codeBlock, choice.code, choice.language);
 
     button.appendChild(codeBlock);
   }
@@ -654,7 +896,6 @@ function startCountdown() {
     }
 
     countdownEl.textContent = remaining;
-
   }, 1000);
 }
 
@@ -732,9 +973,9 @@ function showQuestion() {
     },
 
     ANSWER_REVEAL_DELAY +
-    QUESTION_TO_CHOICES_DELAY +
-    (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
-    400
+      QUESTION_TO_CHOICES_DELAY +
+      (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
+      400
   );
 }
 
