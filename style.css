@@ -35,7 +35,7 @@ THEME
 
   --danger-bg: #2a1518;
 
-  --shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  --shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
 }
 
 html,
@@ -83,6 +83,46 @@ APP
 
 .screen {
   width: min(100%, 620px);
+}
+
+.app-brand {
+  position: fixed;
+
+  z-index: 2;
+
+  top: max(16px, env(safe-area-inset-top));
+
+  left: max(20px, calc((100vw - 620px) / 2));
+
+  color: var(--text);
+
+  font-family: 'Trebuchet MS', ui-sans-serif, sans-serif;
+
+  font-size: 16px;
+
+  font-weight: 700;
+}
+
+.app-brand span {
+  display: inline-block;
+
+  margin-right: 4px;
+
+  padding: 3px 6px;
+
+  border-radius: 5px;
+
+  color: #c7d2fe;
+
+  background: rgba(99, 102, 241, 0.2);
+
+  font-family: ui-sans-serif, system-ui, sans-serif;
+
+  font-size: 11px;
+
+  font-weight: 800;
+
+  vertical-align: 1px;
 }
 
 .hidden {
@@ -174,6 +214,8 @@ QUESTION
 .quiz-screen {
   min-height: calc(100svh - 40px);
 
+  padding-top: 48px;
+
   display: flex;
 
   flex-direction: column;
@@ -190,7 +232,7 @@ QUESTION
 
   border: 1px solid var(--border);
 
-  border-radius: 24px;
+  border-radius: 16px;
 
   padding: 26px;
 
@@ -265,7 +307,7 @@ Used for:
 
   border: 1px solid var(--code-border);
 
-  border-radius: 14px;
+  border-radius: 10px;
 
   background: var(--code-bg);
 
@@ -413,7 +455,7 @@ CHOICES
 
   border: 2px solid var(--border);
 
-  border-radius: 17px;
+  border-radius: 12px;
 
   color: var(--text);
 
@@ -473,6 +515,8 @@ Code inside a choice.
 
   max-width: 100%;
 
+  padding: 14px 17px;
+
   margin-top: 0;
 
   margin-bottom: 0;
@@ -482,6 +526,10 @@ Code inside a choice.
   overflow-x: hidden;
 
   font-size: 13px;
+}
+
+.choice-code::before {
+  display: none;
 }
 
 .choice-code code {
@@ -507,7 +555,7 @@ Correct answer.
 
   background: var(--success-bg);
 
-  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18), 0 10px 28px rgba(34, 197, 94, 0.16);
+  box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.14), 0 6px 18px rgba(34, 197, 94, 0.1);
 
   animation: correctPop 650ms cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -621,19 +669,19 @@ ANIMATIONS
   0% {
     transform: scale(0.98);
 
-    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.5), 0 10px 28px rgba(34, 197, 94, 0.16);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.3), 0 6px 18px rgba(34, 197, 94, 0.1);
   }
 
   45% {
     transform: scale(1.025);
 
-    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0.12), 0 14px 34px rgba(34, 197, 94, 0.22);
+    box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.08), 0 8px 20px rgba(34, 197, 94, 0.14);
   }
 
   100% {
     transform: scale(1);
 
-    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.18), 0 10px 28px rgba(34, 197, 94, 0.16);
+    box-shadow: 0 0 0 1px rgba(34, 197, 94, 0.14), 0 6px 18px rgba(34, 197, 94, 0.1);
   }
 }
 
@@ -669,7 +717,7 @@ MOBILE
   .question-card {
     padding: 21px;
 
-    border-radius: 20px;
+    border-radius: 14px;
   }
 
   .question-text {
@@ -679,7 +727,7 @@ MOBILE
   }
 
   .choice {
-    border-radius: 15px;
+    border-radius: 11px;
 
     padding: 14px;
   }
@@ -689,11 +737,11 @@ MOBILE
 
     font-size: 12.5px;
 
-    border-radius: 12px;
+    border-radius: 9px;
   }
 
   .choice-code {
-    padding: 34px 10px 10px;
+    padding: 12px 10px 10px;
   }
 
   .countdown {
