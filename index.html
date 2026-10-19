@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+
+  <meta name="theme-color" content="#0b1120" />
+
+  <title>MCQ Reveal</title>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <main class="app">
+
+    <!-- COUNTDOWN -->
+    <section id="countdownScreen" class="screen countdown-screen">
+
+      <div class="countdown-label">
+        Get ready
+      </div>
+
+      <div id="countdown" class="countdown">
+        3
+      </div>
+
+      <p>
+        Question is coming...
+      </p>
+
+    </section>
+
+
+    <!-- MCQ -->
+    <section
+      id="quizScreen"
+      class="screen quiz-screen hidden"
+    >
+
+      <!-- QUESTION -->
+      <div class="question-card">
+
+        <div
+          id="questionText"
+          class="question-text"
+        ></div>
+
+        <!-- Optional question code -->
+        <pre
+          id="questionCode"
+          class="code-block question-code hidden"
+        ><code></code></pre>
+
+      </div>
+
+
+      <!-- CHOICES -->
+      <div
+        id="choices"
+        class="choices"
+      ></div>
+
+    </section>
+
+
+    <!-- FINISHED -->
+    <section
+      id="finishedScreen"
+      class="screen finished-screen hidden"
+    >
+
+      <div class="finished-icon">
+        ✓
+      </div>
+
+      <h1>
+        Answer revealed
+      </h1>
+
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>

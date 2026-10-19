@@ -1,0 +1,721 @@
+* {
+  box-sizing: border-box;
+}
+
+
+/*
+============================================================
+THEME
+============================================================
+*/
+
+:root {
+
+  --bg: #0b1120;
+
+  --card: #111827;
+
+  --card-hover: #172033;
+
+  --code-bg: #090e1a;
+
+  --text: #f8fafc;
+
+  --muted: #94a3b8;
+
+  --border: #263247;
+
+  --code-border: #334155;
+
+  --primary: #6366f1;
+
+  --success: #22c55e;
+
+  --success-bg: #0d2418;
+
+  --danger: #ef4444;
+
+  --danger-bg: #2a1518;
+
+  --shadow:
+    0 24px 70px rgba(0, 0, 0, 0.35);
+}
+
+
+html,
+body {
+
+  margin: 0;
+
+  min-height: 100%;
+
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  color: var(--text);
+
+  background:
+    radial-gradient(
+      circle at 50% 0%,
+      rgba(99, 102, 241, 0.16),
+      transparent 38%
+    ),
+    var(--bg);
+}
+
+
+body {
+  min-height: 100svh;
+}
+
+
+button {
+  font: inherit;
+}
+
+
+/*
+============================================================
+APP
+============================================================
+*/
+
+.app {
+
+  width: 100%;
+
+  min-height: 100svh;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  padding: 20px;
+}
+
+
+.screen {
+
+  width: min(100%, 620px);
+}
+
+
+.hidden {
+  display: none !important;
+}
+
+
+/*
+============================================================
+COUNTDOWN
+============================================================
+*/
+
+.countdown-screen {
+
+  text-align: center;
+
+  animation:
+    fadeIn 500ms ease;
+}
+
+
+.countdown-label {
+
+  color: var(--muted);
+
+  font-size: 15px;
+
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+.countdown {
+
+  margin: 16px auto;
+
+  width: 130px;
+
+  height: 130px;
+
+  display: grid;
+
+  place-items: center;
+
+  border-radius: 50%;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      145deg,
+      var(--primary),
+      #8b5cf6
+    );
+
+  font-size: 64px;
+
+  font-weight: 800;
+
+  box-shadow:
+    0 20px 50px
+    rgba(79, 70, 229, 0.35);
+
+  animation:
+    pulse 1s ease-in-out infinite;
+}
+
+
+.countdown-screen p {
+
+  color: var(--muted);
+
+  margin: 0;
+}
+
+
+/*
+============================================================
+QUESTION
+============================================================
+*/
+
+.quiz-screen {
+
+  animation:
+    slideUp 450ms ease;
+}
+
+
+.question-card {
+
+  background: var(--card);
+
+  border: 1px solid var(--border);
+
+  border-radius: 24px;
+
+  padding: 26px;
+
+  box-shadow: var(--shadow);
+
+  margin-bottom: 16px;
+
+  overflow: hidden;
+}
+
+
+.question-text {
+
+  font-size:
+    clamp(
+      23px,
+      5.8vw,
+      35px
+    );
+
+  line-height: 1.28;
+
+  letter-spacing: -0.025em;
+
+  font-weight: 750;
+
+  white-space: pre-wrap;
+}
+
+
+.question-text:empty {
+  display: none;
+}
+
+
+/*
+============================================================
+CODE BLOCK
+
+Used for:
+
+- JavaScript
+- Python
+- SQL
+- Java
+- C++
+- Expressions
+- HTML
+- CSS
+- JSON
+- etc.
+============================================================
+*/
+
+.code-block {
+
+  margin: 17px 0 0;
+
+  padding: 17px;
+
+  width: 100%;
+
+  overflow-x: auto;
+
+  border:
+    1px solid var(--code-border);
+
+  border-radius: 14px;
+
+  background: var(--code-bg);
+
+  color: #e2e8f0;
+
+  text-align: left;
+
+  font-family:
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    Menlo,
+    monospace;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  tab-size: 2;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+
+.code-block code {
+
+  font: inherit;
+
+  white-space: pre;
+}
+
+
+/*
+Question code can be slightly taller.
+*/
+
+.question-code {
+
+  max-height: 360px;
+}
+
+
+/*
+============================================================
+CHOICES
+============================================================
+*/
+
+.choices {
+
+  display: grid;
+
+  gap: 11px;
+}
+
+
+.choice {
+
+  width: 100%;
+
+  display: block;
+
+  padding: 16px 17px;
+
+  background: var(--card);
+
+  border:
+    2px solid var(--border);
+
+  border-radius: 17px;
+
+  color: var(--text);
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease;
+
+  animation:
+    choiceIn 400ms ease both;
+}
+
+
+.choice:hover {
+
+  transform:
+    translateY(-2px);
+
+  border-color: #4f5f7d;
+
+  background:
+    var(--card-hover);
+}
+
+
+.choice:disabled {
+
+  cursor: default;
+}
+
+
+/*
+Normal text inside choice.
+*/
+
+.choice-text {
+
+  width: 100%;
+
+  font-size: 16px;
+
+  line-height: 1.4;
+
+  font-weight: 650;
+
+  white-space: pre-wrap;
+}
+
+
+/*
+Code inside a choice.
+*/
+
+.choice-code {
+
+  margin-top: 0;
+
+  margin-bottom: 0;
+
+  max-height: 260px;
+
+  font-size: 13px;
+}
+
+
+/*
+If choice contains both text and code.
+*/
+
+.choice-text + .choice-code {
+
+  margin-top: 12px;
+}
+
+
+/*
+Correct answer.
+*/
+
+.choice.correct {
+
+  border-color:
+    var(--success);
+
+  background:
+    var(--success-bg);
+
+  box-shadow:
+    0 0 0 1px rgba(34, 197, 94, 0.18),
+    0 10px 28px rgba(34, 197, 94, 0.16);
+
+  animation:
+    correctPop 650ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/*
+Wrong answer when user clicks it.
+*/
+
+.choice.wrong {
+
+  border-color:
+    var(--danger);
+
+  background:
+    var(--danger-bg);
+}
+
+
+/*
+============================================================
+FINISHED
+============================================================
+*/
+
+.finished-screen {
+
+  text-align: center;
+
+  animation:
+    fadeIn 500ms ease;
+}
+
+
+.finished-icon {
+
+  width: 82px;
+
+  height: 82px;
+
+  display: grid;
+
+  place-items: center;
+
+  margin:
+    0 auto 20px;
+
+  border-radius: 50%;
+
+  background:
+    var(--success);
+
+  color: white;
+
+  font-size: 38px;
+
+  font-weight: 900;
+}
+
+
+.finished-screen h1 {
+
+  margin: 0;
+
+  font-size: 30px;
+}
+
+
+/*
+============================================================
+ANIMATIONS
+============================================================
+*/
+
+@keyframes pulse {
+
+  0%,
+  100% {
+
+    transform:
+      scale(1);
+  }
+
+  50% {
+
+    transform:
+      scale(1.06);
+  }
+}
+
+
+@keyframes fadeIn {
+
+  from {
+
+    opacity: 0;
+  }
+
+  to {
+
+    opacity: 1;
+  }
+}
+
+
+@keyframes slideUp {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(18px);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+@keyframes choiceIn {
+
+  from {
+
+    opacity: 0;
+
+    transform:
+      translateY(10px);
+  }
+
+  to {
+
+    opacity: 1;
+
+    transform:
+      translateY(0);
+  }
+}
+
+
+@keyframes correctPop {
+
+  0% {
+
+    transform:
+      scale(0.98);
+
+    box-shadow:
+      0 0 0 0 rgba(34, 197, 94, 0.5),
+      0 10px 28px rgba(34, 197, 94, 0.16);
+  }
+
+  45% {
+
+    transform:
+      scale(1.025);
+
+    box-shadow:
+      0 0 0 8px rgba(34, 197, 94, 0.12),
+      0 14px 34px rgba(34, 197, 94, 0.22);
+  }
+
+  100% {
+
+    transform:
+      scale(1);
+
+    box-shadow:
+      0 0 0 1px rgba(34, 197, 94, 0.18),
+      0 10px 28px rgba(34, 197, 94, 0.16);
+  }
+}
+
+
+/*
+============================================================
+MOBILE
+============================================================
+*/
+
+@media (max-width: 480px) {
+
+  .app {
+
+    align-items:
+      flex-start;
+
+    padding: 16px;
+  }
+
+
+  .countdown-screen {
+
+    align-self:
+      center;
+  }
+
+
+  .quiz-screen {
+
+    padding-top: 6px;
+  }
+
+
+  .question-card {
+
+    padding: 21px;
+
+    border-radius: 20px;
+  }
+
+
+  .question-text {
+
+    font-size: 22px;
+  }
+
+
+  .choice {
+
+    border-radius: 15px;
+
+    padding: 14px;
+  }
+
+
+  .choice-text {
+
+    font-size: 15px;
+  }
+
+
+  .code-block {
+
+    padding: 14px;
+
+    font-size: 12.5px;
+
+    border-radius: 12px;
+  }
+
+
+  .countdown {
+
+    width: 112px;
+
+    height: 112px;
+
+    font-size: 54px;
+  }
+}
+
+
+/*
+============================================================
+REDUCED MOTION
+============================================================
+*/
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+
+    animation-duration:
+      1ms !important;
+
+    animation-iteration-count:
+      1 !important;
+
+    transition-duration:
+      1ms !important;
+  }
+}
