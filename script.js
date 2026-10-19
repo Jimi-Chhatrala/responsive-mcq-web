@@ -536,7 +536,7 @@ SELECT SINGLE MCQ
 ============================================================
 */
 
-const CURRENT_MCQ_INDEX = 5;
+const CURRENT_MCQ_INDEX = 4;
 
 /*
 ============================================================
@@ -555,7 +555,9 @@ const ANSWER_REVEAL_DELAY = 2000;
 
 const QUESTION_TYPING_SPEED = 60;
 
-const QUESTION_TO_CHOICES_DELAY = 5000;
+const QUESTION_MOVE_DELAY = 1000;
+
+const QUESTION_TO_CHOICES_DELAY = 1000;
 
 const CHOICE_REVEAL_DELAY = 1500;
 
@@ -575,6 +577,8 @@ const countdownEl = document.getElementById('countdown');
 
 const questionTextEl = document.getElementById('questionText');
 
+const questionAnnouncementEl = document.getElementById('questionAnnouncement');
+
 const questionCodeEl = document.getElementById('questionCode');
 
 const choicesEl = document.getElementById('choices');
@@ -584,6 +588,8 @@ let countdownTimer = null;
 let answerTimer = null;
 
 let questionTypingTimer = null;
+
+let questionMoveTimer = null;
 
 let answerShown = false;
 
@@ -720,6 +726,95 @@ function getCorrectIndex(item) {
   });
 }
 
+function validateMcqs(questions) {
+  const errors = [];
+
+  if (!Array.isArray(questions) || questions.length === 0) {
+    return ['MCQ data must contain at least one question.'];
+  }
+
+  questions.forEach((item, questionIndex) => {
+    const questionLabel = `Question ${questionIndex + 1}`;
+
+    if (!item || typeof item !== 'object' || Array.isArray(item)) {
+      errors.push(`${questionLabel} must be an object.`);
+
+      return;
+    }
+
+    if (typeof item.mcq !== 'string' || item.mcq.trim() === '') {
+      errors.push(`${questionLabel} must have non-empty question text.`);
+    }
+
+    if (item.code != null && typeof item.code !== 'string') {
+      errors.push(`${questionLabel} code must be a string.`);
+    }
+
+    if (item.language != null && typeof item.language !== 'string') {
+      errors.push(`${questionLabel} language must be a string.`);
+    }
+
+    const hasChoices = Array.isArray(item.choices);
+
+    if (!hasChoices || item.choices.length < 2) {
+      errors.push(`${questionLabel} must have at least two choices.`);
+    }
+
+    if (hasChoices) {
+      item.choices.forEach((choice, choiceIndex) => {
+        const choiceLabel = `${questionLabel}, choice ${choiceIndex + 1}`;
+
+        if (typeof choice === 'string') {
+          if (choice.trim() === '') {
+            errors.push(`${choiceLabel} must not be empty.`);
+          }
+
+          return;
+        }
+
+        if (!choice || typeof choice !== 'object' || Array.isArray(choice)) {
+          errors.push(`${choiceLabel} must be text or a choice object.`);
+
+          return;
+        }
+
+        if (choice.text != null && typeof choice.text !== 'string') {
+          errors.push(`${choiceLabel} text must be a string.`);
+        }
+
+        if (choice.code != null && typeof choice.code !== 'string') {
+          errors.push(`${choiceLabel} code must be a string.`);
+        }
+
+        if (choice.language != null && typeof choice.language !== 'string') {
+          errors.push(`${choiceLabel} language must be a string.`);
+        }
+
+        const hasText = typeof choice.text === 'string' && choice.text.trim() !== '';
+        const hasCode = typeof choice.code === 'string' && choice.code.trim() !== '';
+
+        if (!hasText && !hasCode) {
+          errors.push(`${choiceLabel} must have non-empty text or code.`);
+        }
+      });
+    }
+
+    if (Number.isInteger(item.answer)) {
+      if (!hasChoices || item.answer < 0 || item.answer >= item.choices.length) {
+        errors.push(`${questionLabel} answer index is outside its choices.`);
+      }
+    } else if (typeof item.answer === 'string') {
+      if (!hasChoices || !item.choices.some((choice) => getChoiceAnswerValue(choice) === item.answer)) {
+        errors.push(`${questionLabel} answer does not match any choice.`);
+      }
+    } else {
+      errors.push(`${questionLabel} answer must be a choice index or exact choice text/code.`);
+    }
+  });
+
+  return errors;
+}
+
 /*
 ============================================================
 RENDER CODE BLOCK
@@ -812,9 +907,11 @@ function typeQuestion(text, onComplete) {
   clearTimeout(questionTypingTimer);
   questionTextEl.classList.remove('is-typing');
   questionTextEl.textContent = '';
+  questionAnnouncementEl.textContent = '';
 
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || characters.length === 0) {
     questionTextEl.textContent = text;
+    questionAnnouncementEl.textContent = text;
     onComplete();
 
     return;
@@ -826,6 +923,7 @@ function typeQuestion(text, onComplete) {
     if (characterIndex >= characters.length) {
       questionTextEl.classList.remove('is-typing');
       questionTypingTimer = null;
+      questionAnnouncementEl.textContent = text;
       onComplete();
 
       return;
@@ -851,6 +949,14 @@ function createChoice(choiceData, index) {
   const button = document.createElement('button');
 
   button.className = 'choice';
+
+  button.disabled = true;
+
+  button.addEventListener('animationend', (event) => {
+    if (event.animationName === 'choiceIn') {
+      button.disabled = false;
+    }
+  }, { once: true });
 
   /*
   Stagger animation.
@@ -909,6 +1015,8 @@ function startCountdown() {
   clearTimeout(answerTimer);
 
   clearTimeout(questionTypingTimer);
+
+  clearTimeout(questionMoveTimer);
 
   questionTextEl.classList.remove('is-typing');
 
@@ -985,26 +1093,46 @@ function showQuestion() {
   choicesEl.innerHTML = '';
 
   typeQuestion(item.mcq || '', () => {
-    item.choices.forEach((choice, index) => {
-      const button = createChoice(choice, index);
+    questionMoveTimer = setTimeout(() => {
+      const questionCard = questionTextEl.closest('.question-card');
+      const startingTop = questionCard.getBoundingClientRect().top;
 
-      button.addEventListener('click', () => {
-        revealAnswer(index, correctIndex);
+      item.choices.forEach((choice, index) => {
+        const button = createChoice(choice, index);
+
+        button.addEventListener('click', () => {
+          revealAnswer(index, correctIndex);
+        });
+
+        choicesEl.appendChild(button);
       });
 
-      choicesEl.appendChild(button);
-    });
+      const verticalShift = startingTop - questionCard.getBoundingClientRect().top;
 
-    answerTimer = setTimeout(
-      () => {
-        revealAnswer(null, correctIndex);
-      },
+      if (verticalShift > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        questionCard.animate(
+          [
+            { transform: `translateY(${verticalShift}px)` },
+            { transform: 'translateY(0)' },
+          ],
+          {
+            duration: 750,
+            easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
+          }
+        );
+      }
 
-      ANSWER_REVEAL_DELAY +
-        QUESTION_TO_CHOICES_DELAY +
-        (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
-        400
-    );
+      answerTimer = setTimeout(
+        () => {
+          revealAnswer(null, correctIndex);
+        },
+
+        ANSWER_REVEAL_DELAY +
+          QUESTION_TO_CHOICES_DELAY +
+          (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
+          400
+      );
+    }, QUESTION_MOVE_DELAY);
   });
 }
 
@@ -1084,4 +1212,14 @@ START APP
 
 applyTheme();
 
-startCountdown();
+const mcqValidationErrors = validateMcqs(mcqs);
+
+if (!Number.isInteger(CURRENT_MCQ_INDEX) || CURRENT_MCQ_INDEX < 0 || CURRENT_MCQ_INDEX >= mcqs.length) {
+  mcqValidationErrors.push('CURRENT_MCQ_INDEX must point to an existing question.');
+}
+
+if (mcqValidationErrors.length > 0) {
+  console.error('MCQ data validation failed:\n' + mcqValidationErrors.join('\n'));
+} else {
+  startCountdown();
+}

@@ -26,11 +26,13 @@
       <section id="quizScreen" class="screen quiz-screen hidden">
         <!-- QUESTION -->
         <div class="question-card">
-          <div id="questionText" class="question-text"></div>
+          <div id="questionText" class="question-text" aria-hidden="true"></div>
 
           <!-- Optional question code -->
           <pre id="questionCode" class="code-block question-code hidden"><code></code></pre>
         </div>
+
+        <div id="questionAnnouncement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></div>
 
         <!-- CHOICES -->
         <div id="choices" class="choices"></div>
@@ -44,7 +46,7 @@
       </section>
     </main>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+    <script src="vendor/highlight.min.js"></script>
     <script src="script.js"></script>
   </body>
 </html>
