@@ -361,11 +361,17 @@ CHOICES
 .choices {
   display: grid;
 
+  grid-template-columns: minmax(0, 1fr);
+
   gap: 11px;
 }
 
 .choice {
   width: 100%;
+
+  min-width: 0;
+
+  max-width: 100%;
 
   display: block;
 
@@ -405,15 +411,19 @@ Normal text inside choice.
 */
 
 .choice-text {
+  display: block;
+
   width: 100%;
 
-  font-size: 16px;
+  font-size: clamp(14px, 4vw, 17px);
 
-  line-height: 1.4;
+  line-height: 1.45;
 
   font-weight: 650;
 
   white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
 }
 
 /*
@@ -421,13 +431,25 @@ Code inside a choice.
 */
 
 .choice-code {
+  width: 100%;
+
+  max-width: 100%;
+
   margin-top: 0;
 
   margin-bottom: 0;
 
   max-height: 260px;
 
+  overflow-x: hidden;
+
   font-size: 13px;
+}
+
+.choice-code code {
+  white-space: pre-wrap;
+
+  overflow-wrap: anywhere;
 }
 
 /*
@@ -620,10 +642,6 @@ MOBILE
     border-radius: 15px;
 
     padding: 14px;
-  }
-
-  .choice-text {
-    font-size: 15px;
   }
 
   .code-block {
