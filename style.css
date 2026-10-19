@@ -172,11 +172,11 @@ QUESTION
 }
 
 .question-text {
-  font-size: clamp(23px, 5.8vw, 35px);
+  font-size: clamp(20px, 4vw, 28px);
 
-  line-height: 1.28;
+  line-height: 1.4;
 
-  letter-spacing: -0.025em;
+  letter-spacing: 0;
 
   font-weight: 750;
 
@@ -185,6 +185,22 @@ QUESTION
 
 .question-text:empty {
   display: none;
+}
+
+.question-text.is-typing::after {
+  display: inline-block;
+
+  height: 0.9em;
+
+  margin-left: 3px;
+
+  border-right: 2px solid var(--primary);
+
+  content: '';
+
+  vertical-align: -0.08em;
+
+  animation: typingCaret 750ms step-end infinite;
 }
 
 /*
@@ -561,6 +577,12 @@ ANIMATIONS
   }
 }
 
+@keyframes typingCaret {
+  50% {
+    opacity: 0;
+  }
+}
+
 /*
 ============================================================
 MOBILE
@@ -589,7 +611,9 @@ MOBILE
   }
 
   .question-text {
-    font-size: 22px;
+    font-size: 19px;
+
+    line-height: 1.45;
   }
 
   .choice {

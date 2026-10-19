@@ -536,7 +536,7 @@ SELECT SINGLE MCQ
 ============================================================
 */
 
-const CURRENT_MCQ_INDEX = 9;
+const CURRENT_MCQ_INDEX = 5;
 
 /*
 ============================================================
@@ -552,6 +552,8 @@ before automatically showing the correct answer.
 */
 
 const ANSWER_REVEAL_DELAY = 2000;
+
+const QUESTION_TYPING_SPEED = 60;
 
 const QUESTION_TO_CHOICES_DELAY = 5000;
 
@@ -580,6 +582,8 @@ const choicesEl = document.getElementById('choices');
 let countdownTimer = null;
 
 let answerTimer = null;
+
+let questionTypingTimer = null;
 
 let answerShown = false;
 
@@ -786,11 +790,7 @@ RENDER QUESTION
 */
 
 function renderQuestion(item) {
-  /*
-  Question text
-  */
-
-  questionTextEl.textContent = item.mcq || '';
+  questionTextEl.textContent = '';
 
   /*
   Optional question code
@@ -803,6 +803,40 @@ function renderQuestion(item) {
 
     item.language
   );
+}
+
+function typeQuestion(text, onComplete) {
+  const characters = Array.from(text);
+  let characterIndex = 0;
+
+  clearTimeout(questionTypingTimer);
+  questionTextEl.classList.remove('is-typing');
+  questionTextEl.textContent = '';
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || characters.length === 0) {
+    questionTextEl.textContent = text;
+    onComplete();
+
+    return;
+  }
+
+  questionTextEl.classList.add('is-typing');
+
+  function typeNextCharacter() {
+    if (characterIndex >= characters.length) {
+      questionTextEl.classList.remove('is-typing');
+      questionTypingTimer = null;
+      onComplete();
+
+      return;
+    }
+
+    questionTextEl.textContent += characters[characterIndex];
+    characterIndex++;
+    questionTypingTimer = setTimeout(typeNextCharacter, QUESTION_TYPING_SPEED);
+  }
+
+  typeNextCharacter();
 }
 
 /*
@@ -873,6 +907,10 @@ function startCountdown() {
   clearInterval(countdownTimer);
 
   clearTimeout(answerTimer);
+
+  clearTimeout(questionTypingTimer);
+
+  questionTextEl.classList.remove('is-typing');
 
   countdownScreen.classList.remove('hidden');
 
@@ -946,37 +984,28 @@ function showQuestion() {
 
   choicesEl.innerHTML = '';
 
-  /*
-  Create choices.
-  */
+  typeQuestion(item.mcq || '', () => {
+    item.choices.forEach((choice, index) => {
+      const button = createChoice(choice, index);
 
-  item.choices.forEach((choice, index) => {
-    const button = createChoice(choice, index);
+      button.addEventListener('click', () => {
+        revealAnswer(index, correctIndex);
+      });
 
-    button.addEventListener('click', () => {
-      revealAnswer(index, correctIndex);
+      choicesEl.appendChild(button);
     });
 
-    choicesEl.appendChild(button);
+    answerTimer = setTimeout(
+      () => {
+        revealAnswer(null, correctIndex);
+      },
+
+      ANSWER_REVEAL_DELAY +
+        QUESTION_TO_CHOICES_DELAY +
+        (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
+        400
+    );
   });
-
-  /*
-  Automatically reveal answer.
-
-  The delay also accounts for
-  the staggered choice animations.
-  */
-
-  answerTimer = setTimeout(
-    () => {
-      revealAnswer(null, correctIndex);
-    },
-
-    ANSWER_REVEAL_DELAY +
-      QUESTION_TO_CHOICES_DELAY +
-      (item.choices.length - 1) * CHOICE_REVEAL_DELAY +
-      400
-  );
 }
 
 /*
